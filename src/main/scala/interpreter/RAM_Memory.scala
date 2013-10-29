@@ -1,5 +1,8 @@
 package interpreter
 
+import scala.collection.mutable
+import scala.collection.JavaConversions._
+
 /**
  * Created with IntelliJ IDEA.
  * User: cesar
@@ -13,15 +16,27 @@ class Register() {
   def setBinary(value: Long) = {
     binary =
       (1 to 16 - value.toBinaryString.size).map {
-        "0"
-      }.toArray ++ value.toBinaryString.toArray
+        index => '0'
+      }.toArray ++ value.toBinaryString.toArray[Char]
     this
 
+  }
+
+  def getDecimal: Long = {
+    var index = 0
+    binary.reverse.foldLeft(0L)((x, y) => {
+      val s: Long = y match {
+        case '1' => Math.pow(2,index).toLong
+        case '0' => 0
+      }
+      index += 1
+      s + x
+    })
   }
 }
 
 object Registers {
-  var registers = Map(
+  var registers = mutable.HashMap(
     'A' -> new Register().setBinary(0),
     'B' -> new Register().setBinary(0),
     'C' -> new Register().setBinary(0)
